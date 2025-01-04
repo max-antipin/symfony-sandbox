@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
+use App\Service\OtpStorage\OtpStorageInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +16,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class OneTimePasswordController extends AbstractController
 {
     #[Route('/send-otp', name:'send-otp', methods:'POST', format: 'json')]
-    public function send(Request $request, ValidatorInterface $validator): JsonResponse
+    public function send(Request $request, ValidatorInterface $validator, OtpStorageInterface $otpStorage): JsonResponse
     {
         // Generator generates code
         // OTP code/password, TTL, created at
@@ -40,8 +43,13 @@ class OneTimePasswordController extends AbstractController
             $errorMessage = $errors[0]->getMessage();
             return $this->json(['message' => $errorMessage], 422);
         }
-        if (!email_sent() || no_timeout()) {
-            send_email($email);
+        $message = $otpStorage->get($email);
+        $interval = 60;
+        if (!$message || time() - $message['created_at'] > $interval) {
+            $password = 70139;
+            $otpStorage->set($email, $password);
+            // send_email($email);
+            file_put_contents('var/otp.txt', $password . PHP_EOL, FILE_APPEND | LOCK_EX);
             return $this->json('success');
         } else {
             return $this->json('can not send code');

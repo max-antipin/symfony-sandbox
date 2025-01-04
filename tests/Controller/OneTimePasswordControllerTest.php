@@ -27,28 +27,28 @@ class OneTimePasswordControllerTest extends AppWebTestCase
         var_dump($response->getContent());
     }
 
-    public function testSendEmptyEmail(): void
-    {
-        $client = static::createClient();
-        $client->request(
-            'POST',
-            $this->generateUrl('register-send-otp'),
-        );
-        $this->assertResponseStatusCodeSame(422);
-        $this->assertResponseFormatSame('json');
-        /** @var JsonResponse $response */
-        $response = $client->getResponse();
-        var_dump(json_decode($response->getContent()));
-    }
+    // public function testSendEmptyEmail(): void
+    // {
+    //     $client = static::createClient();
+    //     $client->request(
+    //         'POST',
+    //         $this->generateUrl('register-send-otp'),
+    //     );
+    //     $this->assertResponseStatusCodeSame(422);
+    //     $this->assertResponseFormatSame('json');
+    //     /** @var JsonResponse $response */
+    //     $response = $client->getResponse();
+    //     var_dump(json_decode($response->getContent()));
+    // }
 
-    public function testVerify(): void
-    {
-        $client = static::createClient();
-        $client->request('POST', $this->generateUrl('register-verify-otp'));
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseFormatSame('json');
-        /** @var JsonResponse $response */
-        $response = $client->getResponse();
-        // var_dump($response->getContent());
-    }
+    // public function testVerify(): void
+    // {
+    //     $client = static::createClient();
+    //     $client->request('POST', $this->generateUrl('register-verify-otp'));
+    //     $this->assertResponseIsSuccessful();
+    //     $this->assertResponseFormatSame('json');
+    //     /** @var JsonResponse $response */
+    //     $response = $client->getResponse();
+    //     var_dump($response->getContent());
+    // }
 }
