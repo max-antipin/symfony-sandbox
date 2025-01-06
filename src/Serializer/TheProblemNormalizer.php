@@ -13,7 +13,7 @@ class TheProblemNormalizer implements NormalizerInterface
     {
         return [
             'content' => 'Shit happens.',
-            'exception'=> [
+            'exception' => [
                 'message' => $exception->getMessage(),
                 'code' => $exception->getStatusCode(),
             ],

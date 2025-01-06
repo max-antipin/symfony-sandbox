@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Service\OtpGenerator;
 use App\Service\OtpStorage\OtpStorageInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,7 +17,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class OneTimePasswordController extends AbstractController
 {
     #[Route('/send-otp', name:'send-otp', methods:'POST', format: 'json')]
-    public function send(Request $request, ValidatorInterface $validator, OtpStorageInterface $otpStorage): JsonResponse
+    public function send(Request $request, ValidatorInterface $validator, OtpStorageInterface $otpStorage, OtpGenerator $otpGenerator): JsonResponse
     {
         // Generator generates code
         // OTP code/password, TTL, created at
@@ -43,17 +44,19 @@ class OneTimePasswordController extends AbstractController
             $errorMessage = $errors[0]->getMessage();
             return $this->json(['message' => $errorMessage], 422);
         }
-        $message = $otpStorage->get($email);
+        $otp = $otpStorage->get($email);
         $interval = 60;
-        if (!$message || time() - $message['created_at'] > $interval) {
-            $password = 70139;
-            $otpStorage->set($email, $password);
-            // send_email($email);
-            file_put_contents('var/otp.txt', $password . PHP_EOL, FILE_APPEND | LOCK_EX);
-            return $this->json('success');
-        } else {
-            return $this->json('can not send code');
+        if ($otp) {
+            $time_left = $interval - (time() - $otp['created_at']);
+            if ($time_left > 0) {
+                return $this->json(['message' => 'can not send code', 'time_left' => $time_left]);
+            }
         }
+        $password = $otpGenerator();
+        $otpStorage->set($email, $password);
+        // send_email($email);
+        file_put_contents('var/otp.txt', $password . PHP_EOL, FILE_APPEND | LOCK_EX);
+        return $this->json('success');
     }
 
     #[Route('/verify-otp', name:'verify-otp', methods:'POST', format: 'json')]
