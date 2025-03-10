@@ -1,0 +1,21 @@
+{
+  "listeners": {
+    "*:80": {
+      "pass": "applications/demo"
+    }
+  },
+  "applications": {
+    "demo": {
+      "type": "php",
+      "root": "/var/www/",
+      "script": "public/index.php",
+      "user": "unit",
+      "group": "unit",
+      "processes": {
+        "max": 10,
+        "spare": 5,
+        "idle_timeout": 20
+      }
+    }
+  }
+}
