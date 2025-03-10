@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      target: app-dev
+    configs:
+      - source: server_config
+        target: /docker-entrypoint.d/config.json
+    container_name: symfony-sandbox
+    ports:
+      - 8181:80
+    volumes:
+      - ./:/var/www/
+configs:
+  server_config:
+    file: ./unit.json
