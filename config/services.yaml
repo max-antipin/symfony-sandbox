@@ -23,7 +23,7 @@ services:
         class: App\Service\OtpStorage\OtpStorageRedis
         arguments:
             - 'localhost'
-            - 26379
+            - '%env(string:REDIS_PORT)%'
             - '%env(string:REDIS_USER)%'
             - '%env(string:REDIS_USER_PASSWORD)%'
             - 15
