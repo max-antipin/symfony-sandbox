@@ -24,6 +24,7 @@ services:
             - '../src/Kernel.php'
     App\Service\OtpStorage\OtpStorageInterface:
         class: App\Service\OtpStorage\OtpStorageRedis
+        # todo: Скорее всего, сюда не должны передаваться креды, поскольку должно использоваться уже готовое соединение с Redis.
         arguments:
             - 'localhost'
             - '%env(string:REDIS_PORT)%'

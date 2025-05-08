@@ -17,7 +17,7 @@ final readonly class OtpStorageRedis implements OtpStorageInterface
         #[SensitiveParameter()]
         string $password,
         private int $ttl_minutes,
-    ) {
+    ) {# todo: Скорее всего, сюда не должны передаваться креды, поскольку должно использоваться уже готовое соединение с Redis.
         $this->redis = new Redis([
             'host' => $host,
             'port' => $port,

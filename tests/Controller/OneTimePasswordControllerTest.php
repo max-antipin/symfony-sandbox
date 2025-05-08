@@ -12,12 +12,27 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 #[CoversClass(OneTimePasswordController::class)]
 class OneTimePasswordControllerTest extends AppWebTestCase
 {
-    public function testSend(): void
+    public function testSendRegister(): void
     {
         $client = static::createClient();
         $client->request(
             'POST',
             $this->generateUrl('register-send-otp'),
+            ['uid' => 'max.v.antipin@gmail.com']
+        );
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseFormatSame('json');
+        /** @var JsonResponse $response */
+        $response = $client->getResponse();
+        var_dump($response->getContent());
+    }
+
+    public function testSendLogin(): void
+    {
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            $this->generateUrl('login-send-otp'),
             ['uid' => 'max.v.antipin@gmail.com']
         );
         $this->assertResponseIsSuccessful();

@@ -32,6 +32,7 @@ class OneTimePasswordController extends AbstractController
         // user banned
         // timeout
         // too many tries
+        // Storage is down
         $email = $request->request->getString('uid');
         $emailConstraint = new Assert\Email();
         // Сейчас мы должны не просто проверять правильность переданного телефона или мыла, но
@@ -57,7 +58,7 @@ class OneTimePasswordController extends AbstractController
             }
         }
         $password = $otpGenerator();
-        $otpStorage->set($email, $password);
+        $otpStorage->set($email, $password);// В случае дозвона пароль приходит от сервиса, и сохранение в storage происходит ПОСЛЕ отправки, а не до.
         // send_email($email);
         file_put_contents('var/otp.txt', $password . PHP_EOL, FILE_APPEND | LOCK_EX);
         return $this->json('success');
