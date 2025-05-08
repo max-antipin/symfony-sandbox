@@ -21,7 +21,7 @@ class OneTimePasswordController extends AbstractController
     {
         // Generator generates code
         // OTP code/password, TTL, created at
-        // Channel ot send (delivery channel): email, phone, telegram bot
+        // Channel to send (delivery channel): email, phone, telegram bot
         // Storage: Redis, MySQL, Postgres, Mongo
         // User ID
         // от канала зависит алгоритм валидации
