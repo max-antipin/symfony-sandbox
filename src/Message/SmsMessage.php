@@ -9,7 +9,8 @@ final readonly class SmsMessage
     public function __construct(
         private string $phoneNumber,
         private string $message
-    ) {}
+    ) {
+    }
 
     public function getPhoneNumber(): string
     {

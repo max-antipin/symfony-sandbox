@@ -11,6 +11,5 @@ class EmailSender implements OtpSenderInterface
 
     public function send(): void
     {
-
     }
 }
