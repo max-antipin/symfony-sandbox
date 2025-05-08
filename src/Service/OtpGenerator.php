@@ -6,9 +6,9 @@ readonly class OtpGenerator
 {
     public const MIN_LENGTH = 4;
 
-    public function __construct(private OtpCharset $charset, private int $length)
+    public function __construct(private OtpCharset $otp_charset, private int $otp_length)
     {
-        if ($length < self::MIN_LENGTH) {
+        if ($otp_length < self::MIN_LENGTH) {
             throw new \ValueError('Length must be greater than or equal to ' . self::MIN_LENGTH);
         }
         $this->chars = array_merge(range('a', 'z'), range('A', 'Z'));
@@ -16,8 +16,8 @@ readonly class OtpGenerator
 
     public function __invoke(): string
     {
-        return match ($this->charset) {
-            OtpCharset::NUMBER => sprintf("%0{$this->length}d", random_int(0, 10 ** $this->length)),
+        return match ($this->otp_charset) {
+            OtpCharset::NUMBER => sprintf("%0{$this->otp_length}d", random_int(0, 10 ** $this->otp_length)),
             OtpCharset::ALPHA => $this->generateAlpha(),
             OtpCharset::ALPHA_LC => strtolower($this->generateAlpha()),
             OtpCharset::ALPHA_UC => strtoupper($this->generateAlpha())
@@ -28,7 +28,7 @@ readonly class OtpGenerator
     {
         $str = '';
         $c = count($this->chars);
-        foreach (str_split(random_bytes($this->length)) as $char) {
+        foreach (str_split(random_bytes($this->otp_length)) as $char) {
             $str .= $this->chars[ord($char) % $c];
         }
         return $str;
