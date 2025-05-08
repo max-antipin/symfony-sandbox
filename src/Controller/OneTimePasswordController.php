@@ -21,7 +21,7 @@ class OneTimePasswordController extends AbstractController
     {
         // Generator generates code
         // OTP code/password, TTL, created at
-        // Channel to send (delivery channel): email, phone, telegram bot
+        // Channel to send (delivery channel): email, phone (sms or call), telegram bot, push
         // Storage: Redis, MySQL, Postgres, Mongo
         // User ID
         // от канала зависит алгоритм валидации
@@ -34,6 +34,10 @@ class OneTimePasswordController extends AbstractController
         // too many tries
         $email = $request->request->getString('uid');
         $emailConstraint = new Assert\Email();
+        // Сейчас мы должны не просто проверять правильность переданного телефона или мыла, но
+        // мы должны определить, что именно было передано, и далее выбирать обработчик.
+        // Т.е.: передали телефон - шлём через смс\звонок; передали email - отправляем письмо.
+        // Получается, что соответствующие сервисы должны быть ленивыми.
         // all constraint "options" can be set this way
         // $emailConstraint->message = 'Invalid email address';
         $errors = $validator->validate(
