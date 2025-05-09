@@ -52,7 +52,7 @@ class OneTimePasswordController extends AbstractController
         $otp = $otpStorage->get($email);
         $interval = 60;
         if ($otp) {
-            $time_left = $interval - (time() - $otp['created_at']);
+            $time_left = $interval - (time() - $otp['created_at']);// Это выражение можно поместить в entity.
             if ($time_left > 0) {
                 return $this->json(['message' => 'can not send code', 'time_left' => $time_left]);
             }

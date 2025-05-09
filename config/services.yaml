@@ -35,6 +35,8 @@ services:
     #     arguments:
     #         - !php/enum App\Service\OtpCharset::NUMBER
     #         - 6
+    App\EventListener\ExceptionListener:
+        tags: [kernel.event_listener]
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
