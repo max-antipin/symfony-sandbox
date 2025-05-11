@@ -36,6 +36,6 @@ abstract class OtpMessage implements OtpMessageInterface
 
     final public function __debugInfo(): array
     {
-        return ['code' => $this->code];
+        return ['code' => $this->code ?? null];
     }
 }

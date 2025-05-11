@@ -29,4 +29,19 @@ class OtpMessageTest extends TestCase
         $this->expectException(\Error::class);
         echo $msg->getCode();
     }
+
+    public function testDebugInfo(): void
+    {
+        $msg = new OtpSmsMessage('+79991234');
+        $info = $msg->__debugInfo();
+        $this->assertArrayHasKey('code', $info);
+        $this->assertCount(1, $info, 'No other fiels except \'code\'');
+        $this->assertNull($info['code']);
+        $code = 'ABCD';
+        $msg->setCode($code);
+        $info = $msg->__debugInfo();
+        $this->assertArrayHasKey('code', $info);
+        $this->assertCount(1, $info, 'No other fiels except \'code\'');
+        $this->assertSame($code, $info['code']);
+    }
 }
