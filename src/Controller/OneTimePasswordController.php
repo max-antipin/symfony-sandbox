@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Service\OtpGenerator;
+use App\Service\OtpEmailMessage;
 use App\Service\OtpStorage\OtpStorageInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,12 +12,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 #[Route('/register', name:'register-')]
 class OneTimePasswordController extends AbstractController
 {
     #[Route('/send-otp', name:'send-otp', methods:'POST', format: 'json')]
-    public function send(Request $request, ValidatorInterface $validator, OtpStorageInterface $otpStorage, OtpGenerator $otpGenerator): JsonResponse
+    public function send(Request $request, ValidatorInterface $validator, OtpStorageInterface $otpStorage, MessageBusInterface $messageBus): JsonResponse
     {
         // Generator generates code
         // OTP code/password, TTL, created at
@@ -57,10 +58,10 @@ class OneTimePasswordController extends AbstractController
                 return $this->json(['message' => 'can not send code', 'time_left' => $time_left]);
             }
         }
-        $password = $otpGenerator();
-        $otpStorage->set($email, $password);// В случае дозвона пароль приходит от сервиса, и сохранение в storage происходит ПОСЛЕ отправки, а не до.
-        // send_email($email);
-        file_put_contents('var/otp.txt', $password . PHP_EOL, FILE_APPEND | LOCK_EX);
+        $message = new OtpEmailMessage($email);
+        // send message without code to transport
+        $messageBus->dispatch($message);
+        $otpStorage->set($message->getRecipientId(), $message->getCode());// В случае дозвона пароль приходит от сервиса, и сохранение в storage происходит ПОСЛЕ отправки, а не до.
         return $this->json('success');
     }
 

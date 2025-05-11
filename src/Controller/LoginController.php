@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Service\OtpGenerator;
 use App\Service\OtpStorage\OtpStorageDoctrine;
+use App\Service\OtpDialMessage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class LoginController extends AbstractController
 {
     #[Route('/send-otp', name:'send-otp', methods:'POST', format: 'json')]
-    public function send(Request $request, ValidatorInterface $validator, OtpStorageDoctrine $otpStorage, OtpGenerator $otpGenerator): JsonResponse
+    public function send(Request $request, ValidatorInterface $validator, OtpStorageDoctrine $otpStorage, MessageBusInterface $messageBus): JsonResponse
     {
         //... user must NOT be logged in
         $email = $request->request->getString('uid');
@@ -38,10 +39,10 @@ class LoginController extends AbstractController
                 return $this->json(['message' => 'can not send code', 'time_left' => $time_left]);
             }
         }
-        $password = $otpGenerator();
-        $otpStorage->set($email, $password);
-        // send_email($email);
-        file_put_contents('var/otp.txt', $password . PHP_EOL, FILE_APPEND | LOCK_EX);
+        $message = new OtpDialMessage($email);// todo: use phone number!!!
+        // send message without code to transport
+        $messageBus->dispatch($message);
+        $otpStorage->set($message->getRecipientId(), $message->getCode());
         return $this->json('success');
     }
 

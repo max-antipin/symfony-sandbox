@@ -35,6 +35,7 @@ final readonly class OtpStorageRedis implements OtpStorageInterface
         $key = $this->mkKey($uid);
         $this->redis->hMSet($key, ['uid' => $uid, 'password' => $password, 'created_at' => time()]);
         // + 90 second to compensate delays.
+        // todo: а здесь точно нужно добавлять время?
         $this->redis->expire($key, $this->ttl_minutes * 60 + 90);
     }
 
