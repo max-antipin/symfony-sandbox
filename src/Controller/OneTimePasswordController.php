@@ -59,9 +59,10 @@ class OneTimePasswordController extends AbstractController
                 return $this->json(['message' => 'can not send code', 'time_left' => $time_left]);
             }
         }
-        $message = new OtpEmailMessage($email, ($otpGenerator)());
+        $message = new OtpEmailMessage($email, $otpGenerator);
         // send message without code to transport
         $messageBus->dispatch($message);
+        var_dump($message);
         $otpStorage->set($message->getRecipientId(), $message->getCode());// В случае дозвона пароль приходит от сервиса, и сохранение в storage происходит ПОСЛЕ отправки, а не до.
         return $this->json('success');
     }

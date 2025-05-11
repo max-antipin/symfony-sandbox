@@ -7,5 +7,4 @@ interface OtpMessageInterface
 {
     public function getRecipientId(): string;
     public function getCode(): string;
-    public function setCode(string $code): self;
 }

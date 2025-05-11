@@ -40,9 +40,10 @@ class LoginController extends AbstractController
                 return $this->json(['message' => 'can not send code', 'time_left' => $time_left]);
             }
         }
-        $message = new OtpDialMessage($email, ($otpGenerator)());// todo: use phone number!!!
+        $message = new OtpDialMessage($email, $otpGenerator);// todo: use phone number!!!
         // send message without code to transport
         $messageBus->dispatch($message);
+        var_dump($message);
         $otpStorage->set($message->getRecipientId(), $message->getCode());
         return $this->json('success');
     }
