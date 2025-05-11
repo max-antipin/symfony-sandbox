@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Service\OtpGenerator;
 use App\Service\OtpEmailMessage;
 use App\Service\OtpStorage\OtpStorageInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +19,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class OneTimePasswordController extends AbstractController
 {
     #[Route('/send-otp', name:'send-otp', methods:'POST', format: 'json')]
-    public function send(Request $request, ValidatorInterface $validator, OtpStorageInterface $otpStorage, MessageBusInterface $messageBus): JsonResponse
+    public function send(Request $request, ValidatorInterface $validator, OtpStorageInterface $otpStorage, OtpGenerator $otpGenerator, MessageBusInterface $messageBus): JsonResponse
     {
         // Generator generates code
         // OTP code/password, TTL, created at
@@ -58,7 +59,7 @@ class OneTimePasswordController extends AbstractController
                 return $this->json(['message' => 'can not send code', 'time_left' => $time_left]);
             }
         }
-        $message = new OtpEmailMessage($email);
+        $message = new OtpEmailMessage($email, ($otpGenerator)());
         // send message without code to transport
         $messageBus->dispatch($message);
         $otpStorage->set($message->getRecipientId(), $message->getCode());// В случае дозвона пароль приходит от сервиса, и сохранение в storage происходит ПОСЛЕ отправки, а не до.

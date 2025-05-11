@@ -13,9 +13,16 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(OtpSmsMessage::class)]
 class OtpMessageTest extends TestCase
 {
+    public function testResetCode(): void
+    {
+        $msg = new OtpSmsMessage('+79991234', 'XYZ123');
+        $this->expectException(\Error::class);
+        $msg->setCode('98789');
+    }
+
     public function testSetCodeTwice(): void
     {
-        $msg = new OtpSmsMessage('+79991234');
+        $msg = new OtpSmsMessage('+79991234', '');
         $code = '98765';
         $msg->setCode($code);
         $this->assertSame($code, $msg->getCode());
@@ -25,18 +32,18 @@ class OtpMessageTest extends TestCase
 
     public function testGetEmptyCode(): void
     {
-        $msg = new OtpSmsMessage('+79991234');
+        $msg = new OtpSmsMessage('+79991234', '');
         $this->expectException(\Error::class);
         echo $msg->getCode();
     }
 
     public function testDebugInfo(): void
     {
-        $msg = new OtpSmsMessage('+79991234');
+        $msg = new OtpSmsMessage('+79991234', '');
         $info = $msg->__debugInfo();
         $this->assertArrayHasKey('code', $info);
         $this->assertCount(1, $info, 'No other fiels except \'code\'');
-        $this->assertNull($info['code']);
+        $this->assertSame('', $info['code']);
         $code = 'ABCD';
         $msg->setCode($code);
         $info = $msg->__debugInfo();

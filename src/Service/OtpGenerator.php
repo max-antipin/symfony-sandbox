@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-readonly class OtpGenerator
+readonly class OtpGenerator implements OtpGeneratorInterface
 {
     public const MIN_LENGTH = 4;
 

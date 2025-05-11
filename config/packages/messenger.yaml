@@ -12,6 +12,7 @@ framework:
 
         routing:
             # Route your messages to the transports
+            'App\Service\OtpEmailMessage': async
             'App\Message\SmsMessage': async
 
 # when@test:
